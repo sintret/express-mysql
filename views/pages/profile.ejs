@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <% include ../partials/standart-head %>
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>Profile</title>
+</head>
+<body>
+<% include ../partials/menu %>
+
+<div class="container">
+
+    <!-- Main component for a primary marketing message or call to action -->
+  <h1>Your Profile</h1>
+    <p>
+        ID: <%= user.id %><br/>
+        Username: <%= user.username %><br/>
+        Name: <%= user.fullname %><br/>
+
+    </p>
+    <a href="/logout">Log out</a>
+
+</div> <!-- /container -->
+<% include ../partials/footer %>
+
+</body>
+</html>

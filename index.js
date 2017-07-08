@@ -45,7 +45,7 @@ app.get("/about", function (req, res) {
     var About = require("./models/about.js");
     About.findById(1).then(function (model) {
         console.log(model.dataValues);
-        res.render('pages/about', {data: model.dataValues, page_name: ""});
+        res.render('pages/about', {data: model.dataValues, page_name: "about"});
     });
 });
 

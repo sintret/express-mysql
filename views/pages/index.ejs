@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <% include ../partials/standart-head %>
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>Static Top Navbar Example for Bootstrap</title>
+</head>
+<body>
+<% include ../partials/menu %>
+
+<div class="container">
+
+    <!-- Main component for a primary marketing message or call to action -->
+    <div class="jumbotron">
+        <h1><%= data.title %></h1>
+        <p><%= data.description %></p>
+        <p>
+            <a class="btn btn-lg btn-primary" href="../../components/#navbar" role="button">View navbar docs »</a>
+        </p>
+    </div>
+
+</div> <!-- /container -->
+<% include ../partials/footer %>
+
+</body>
+</html>

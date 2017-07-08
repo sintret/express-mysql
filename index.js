@@ -9,7 +9,25 @@ var Strategy = require('passport-local').Strategy;
 app.use(require('morgan')('combined'));
 app.use(require('cookie-parser')());
 app.use(require('body-parser').urlencoded({extended: true}));
-app.use(require('express-session')({secret: 'keyboard cat', resave: false, saveUninitialized: false}));
+app.use(require('express-session')({secret: 'keybfgdgfdcat', resave: false, saveUninitialized: false}));
+//it's same
+//app.use("/static", express.static(path.join(__dirname)+"/static"));
+app.use("/static", express.static(path.join(__dirname, "static")));
+app.use('/bower_components', express.static(path.join(__dirname, 'bower_components')));
+
+/*
+ app.use(require('./routes/index'));
+ app.use(require('./routes/speakers'));
+ */
+// Initialize Passport and restore authentication state, if any, from the
+// session.
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(function(req, res, next){
+    app.locals.login = req.isAuthenticated();
+    next();
+});
+
 
 var Info = require("./models/Info.js");
 var User = require("./models/User.js");
@@ -19,19 +37,10 @@ var User = require("./models/User.js");
 app.set('view engine', 'ejs');
 
 
-//it's same
-//app.use("/static", express.static(path.join(__dirname)+"/static"));
-app.use("/static", express.static(path.join(__dirname, "static")));
-app.use('/bower_components', express.static(path.join(__dirname, 'bower_components')));
-/*
- app.use(require('./routes/index'));
- app.use(require('./routes/speakers'));
- */
-
-app.get("/", function (req, res) {
+app.get("/", function (req, res, next) {
     Info.findById(1)
         .then(function (info) {
-            res.render('pages/index', {data: info.dataValues, page_name: "",session: req.user});
+            res.render('pages/index', {data: info.dataValues, page_name: ""});
         });
     /*Info.create({
      title: "Express Js with mysql",
@@ -47,7 +56,7 @@ app.get("/about", function (req, res) {
     var About = require("./models/about.js");
     About.findById(1).then(function (model) {
         console.log(model.dataValues);
-        res.render('pages/about', {data: model.dataValues, page_name: "about",session: req.user});
+        res.render('pages/about', {data: model.dataValues, page_name: "about"});
     });
 });
 
@@ -79,13 +88,13 @@ passport.deserializeUser(function (id, cb) {
     });
 });
 
-// Initialize Passport and restore authentication state, if any, from the
-// session.
-app.use(passport.initialize());
-app.use(passport.session());
+
 
 app.get("/login", function (req, res) {
-    res.render('pages/login', {data: {page_name: "login"}});
+    if(req.isAuthenticated())
+        res.redirect('/profile');
+    else
+        res.render('pages/login', {data: {page_name: "login"}});
 });
 
 app.post('/login',
@@ -94,11 +103,11 @@ app.post('/login',
         res.redirect('/profile');
     });
 
-app.get('/profile', 
+app.get('/profile',loggedIn,
     require('connect-ensure-login').ensureLoggedIn(),
-    function(req, res){
+    function(req, res, next){
         console.log(req);
-        res.render('pages/profile', { user: req.user,session: req.user });
+        res.render('pages/profile', { user: req.user });
     });
 
 
@@ -108,13 +117,11 @@ app.get('/logout',
         res.redirect('/');
     });
 
-function checkLogin(req, res){
-    if(req.user){
-        req.next();     //If session exists, proceed to page
+function loggedIn(req, res, next) {
+    if (req.user) {
+        next();
     } else {
-        var err = new Error("Not logged in!");
-        console.log(req.user);
-        req.next(err);  //Error, trying to access unauthorized page!
+        res.redirect('/login');
     }
 }
 

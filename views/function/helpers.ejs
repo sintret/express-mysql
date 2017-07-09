@@ -1,0 +1,6 @@
+<%
+removeTags = function(txt){
+    var rex = /(<([^>]+)>)/ig;
+    return txt.replace(rex , "");
+}
+%>

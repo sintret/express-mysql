@@ -5,7 +5,7 @@
 const Sequelize = require('sequelize');
 var sequelize = require('./config.js');
 
-var Info = sequelize.define('info', {
+var Info = sequelize.define('Info', {
     title: {
         type: Sequelize.STRING
     },

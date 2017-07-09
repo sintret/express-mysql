@@ -6,7 +6,7 @@ var Strategy = require('passport-local').Strategy;
 
 // Use application-level middleware for common functionality, including
 // logging, parsing, and session handling.
-app.use(require('morgan')('combined'));
+//app.use(require('morgan')('combined'));
 app.use(require('cookie-parser')());
 app.use(require('body-parser').urlencoded({extended: true}));
 app.use(require('express-session')({secret: 'keybfgdgfdcat', resave: false, saveUninitialized: false}));
@@ -23,7 +23,7 @@ app.use('/bower_components', express.static(path.join(__dirname, 'bower_componen
 // session.
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(function(req, res, next){
+app.use(function (req, res, next) {
     app.locals.login = req.isAuthenticated();
     next();
 });
@@ -42,18 +42,41 @@ app.get("/", function (req, res, next) {
         .then(function (info) {
             res.render('pages/index', {data: info.dataValues, page_name: ""});
         });
-    /*Info.create({
-     title: "Express Js with mysql",
-     description: "Kick Start for ExpressJs"
-     }).then(function (model) {
-     console.log(JSON.stringify(model));
-     res.render('pages/index', {data: model.dataValues, page_name: ""});
-     }).catch(function (err) {
-     console.log(err);
-     });*/
+});
+
+app.get("/blog", function (req, res) {
+    var Article = require("./models/Article.js");
+    var limit = 10;
+    var offset = 0;
+    Article.findAndCountAll()
+        .then(function (data) {
+            var page = req.query.page || 1;
+            var pages = Math.ceil(data.count / limit);
+            offset = limit * (page - 1);
+            Article.findAll({
+                    //attributes: ['id', 'first_name', 'last_name', 'date_of_birth'],
+                    limit: limit,
+                    offset: offset,
+                    $sort: {id: 1}
+                })
+                .then(function (articles) {
+                    res.render('pages/blog', {
+                        'results': articles,
+                        'count': pages,
+                        'currentPage':page,
+                        page_name: "blog"
+                    });
+                });
+
+        })
+
+        .catch(function (error) {
+            res.status(500).send(error.toString());
+        });
+
 });
 app.get("/about", function (req, res) {
-    var About = require("./models/about.js");
+    var About = require("./models/About.js");
     About.findById(1).then(function (model) {
         console.log(model.dataValues);
         res.render('pages/about', {data: model.dataValues, page_name: "about"});
@@ -89,9 +112,8 @@ passport.deserializeUser(function (id, cb) {
 });
 
 
-
 app.get("/login", function (req, res) {
-    if(req.isAuthenticated())
+    if (req.isAuthenticated())
         res.redirect('/profile');
     else
         res.render('pages/login', {data: {page_name: "login"}});
@@ -103,16 +125,16 @@ app.post('/login',
         res.redirect('/profile');
     });
 
-app.get('/profile',loggedIn,
+app.get('/profile', loggedIn,
     require('connect-ensure-login').ensureLoggedIn(),
-    function(req, res, next){
+    function (req, res, next) {
         console.log(req);
-        res.render('pages/profile', { user: req.user });
+        res.render('pages/profile', {user: req.user});
     });
 
 
 app.get('/logout',
-    function(req, res){
+    function (req, res) {
         req.logout();
         res.redirect('/');
     });

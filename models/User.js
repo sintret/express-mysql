@@ -5,7 +5,7 @@
 const Sequelize = require('sequelize');
 var sequelize = require('./config.js');
 
-var User = sequelize.define('User', {
+var User = sequelize.define('user', {
     username: {
         type: Sequelize.STRING,
         unique: true

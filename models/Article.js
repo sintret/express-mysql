@@ -4,7 +4,7 @@
 const Sequelize = require('sequelize');
 var sequelize = require('./config.js');
 
-var Article = sequelize.define('Article', {
+var Article = sequelize.define('article', {
     image: {
         type: Sequelize.STRING,
     },
